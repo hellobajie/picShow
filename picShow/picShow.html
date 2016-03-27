@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,user-scalable=no" />
+	<title></title>
+<style>
+	body{
+		background: rgb(29,29,29);
+	}
+	img{
+		width: 6rem;
+		height: 4rem;
+		transition:1s;
+		border-radius: 5px;
+		-webkit-box-reflect:below 10px -webkit-linear-gradient(transparent,transparent 30%,rgba(255,255,255,.3));
+		
+	}
+	div{
+		width: 6rem;
+		height: 4rem;
+		perspective:12rem;
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform-style:preserve-3d;
+	}
+	img:nth-of-type(1){
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform:rotateY(40deg) translateZ(0px);
+	}
+	img:nth-of-type(2){
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform:rotateY(40deg) translateZ(-1.50rem);
+	}
+	img:nth-of-type(3){
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform:rotateY(40deg) translateZ(-3rem);
+	}
+	img:nth-of-type(4){
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform:rotateY(40deg) translateZ(-4.50rem);
+	}
+	
+</style>
+<script src='jquery-2.2.1.js'></script>
+<script>
+$(function(){
+	timer1 = null;
+	timer2 = null;
+	timer3 = null;
+	timer4 = null;
+	$('#box img').data('onOff',false);
+	$('#box img').data('isClick',false);
+	$('#box img').get(0).index = 0;
+	$('#box img').get(1).index = -1;
+	$('#box img').get(2).index = -2;
+	$('#box img').get(3).index = -3;
+
+	document.getElementsByTagName("html")[0].style.fontSize=document.documentElement.clientWidth/16+"px";
+	document.documentElement.clientWidth/16+"px";
+	$('#box').css({
+		top:(document.documentElement.clientHeight - $('#box').height())/2,
+		left:(document.documentElement.clientWidth - $('#box').width())/2
+	})
+	play();
+
+	function show(num){
+		$('#box img').eq(num).data('isClick',false);
+		$('#box img').eq(num).css('transition','1s')
+		$('#box img').get(num).index++;
+		if($('#box img').get(num).index == 1){
+			$('#box img').eq(num).data('onOff',true);
+			$('#box img').eq(num).css('transform','rotateY(40deg) translateZ('+1.50*$('#box img').get(num).index+'rem)');
+			$('#box img').eq(num).css('opacity','0');
+		}else{
+			$('#box img').eq(num).css('transform','rotateY(40deg) translateZ('+1.50*$('#box img').get(num).index+'rem)');
+		}
+	}
+
+	function play(){
+		timer1 = setInterval(function(){
+			show(0);
+		},2000)
+		timer2 = setInterval(function(){
+			show(1);	
+		},2000)
+		timer3 = setInterval(function(){
+			show(2);
+		},2000)
+		timer4 = setInterval(function(){
+			show(3);
+		},2000)
+	}
+
+	for(var b=0;b<$('#box img').length;b++){
+		$('#box img').get(b).addEventListener('webkitTransitionEnd',function(){
+			if(this.index > 0){
+				$(this).css('transition','0s');
+				this.index -= 4;
+				$(this).data('onOff',false);
+				$(this).css('transform','rotateY(40deg) translateZ('+1.50*this.index+'rem)').css('opacity',1);
+			}
+		})
+	}
+
+	var btnOnoff = true;
+	$('#box img').on({'mouseover':function(){
+		clearInterval(timer1);
+		clearInterval(timer2);
+		clearInterval(timer3);
+		clearInterval(timer4);
+	},'mouseout':function(){
+		$('#box img').css('transition','1s');
+		play();
+	},'click':function(){
+		if(btnOnoff){
+			setTimeout(function(){
+				btnOnoff = true;
+			},1000)
+			btnOnoff = false;
+			if(!$(this).data('isClick')){
+				$('#box img').css('transition','1s');
+				$('#box img').data('isClick',false);
+				$(this).data('isClick',true);
+				var num = 0-this.index;
+				for(var i=0;i<$('#box img').length;i++){
+					$('#box img').get(i).index += num;
+					if($('#box img').get(i).index > 0){
+						$('#box img').eq(i).css('opacity','0');
+						$('#box img').eq(i).css('transform','rotateY(40deg) translateZ('+1.50*$('#box img').get(i).index+'rem)');
+					}else{
+						$('#box img').eq(i).css('transform','rotateY(40deg) translateZ('+1.50*$('#box img').get(i).index+'rem)');
+						$(this).css('transform','rotateY(0deg) translateZ(1rem)');
+					}
+				}
+			}else{
+				$(this).data('isClick',false)
+				$(this).css('transform','rotateY(40deg) translateZ(0px)')
+			}
+		}
+	}})
+
+})
+</script>
+</head>
+<body>
+	<div id="box">
+		<img src="1.jpg" alt="">
+		<img src="2.jpg" alt="">
+		<img src="3.jpg" alt="">
+		<img src="4.jpg" alt="">
+	</div>
+</body>
+</html>
